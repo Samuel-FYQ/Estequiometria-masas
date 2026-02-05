@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Calculadora estequiométrica inteligente</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <div class="app-inner">
+
+      <header class="header">
+        <div class="title-block">
+          <h1>Calculadora estequiométrica inteligente</h1>
+        </div>
+      </header>
+
+      <main class="grid">
+
+        <!-- SECCIÓN 1: REACCIÓN -->
+        <section class="card">
+          <div class="card-header">
+            <h2 class="card-title">1 · Definir reacción</h2>
+          </div>
+
+          <p class="hint" style="margin-top:-4px; margin-bottom:12px;">
+            Introduce los reactivos y productos de la reacción química.
+            Puedes añadir tantas sustancias como necesites.
+            La calculadora ajustará la ecuación y mostrará las masas molares.
+          </p>
+
+          <div class="reaction-grid">
+            <!-- REACTIVOS -->
+            <div class="reaction-column">
+              <h3 class="column-title">Reactivos</h3>
+
+              <div id="reactants-list" class="rows">
+                <!-- Fila 1 -->
+                <div class="rowline">
+                  <input type="text" class="species-input" data-side="reactivo"
+                         placeholder="Ej: H2, Fe2(SO4)3, C6H12O6..." />
+                  <button type="button" class="icon-btn remove-species" aria-label="Quitar" title="Quitar">🗑️</button>
+                </div>
+
+                <!-- Fila 2 -->
+                <div class="rowline">
+                  <input type="text" class="species-input" data-side="reactivo"
+                         placeholder="Opcional" />
+                  <button type="button" class="icon-btn remove-species" aria-label="Quitar" title="Quitar">🗑️</button>
+                </div>
+              </div>
+
+              <button id="add-reactant" type="button" class="btn-tertiary" style="margin-top:8px;">
+                + Añadir reactivo
+              </button>
+            </div>
+
+            <div class="reaction-arrow">→</div>
+
+            <!-- PRODUCTOS -->
+            <div class="reaction-column">
+              <h3 class="column-title">Productos</h3>
+
+              <div id="products-list" class="rows">
+                <!-- Fila 1 -->
+                <div class="rowline">
+                  <input type="text" class="species-input" data-side="producto"
+                         placeholder="Ej: H2O, CO2, NaCl..." />
+                  <button type="button" class="icon-btn remove-species" aria-label="Quitar" title="Quitar">🗑️</button>
+                </div>
+
+                <!-- Fila 2 -->
+                <div class="rowline">
+                  <input type="text" class="species-input" data-side="producto"
+                         placeholder="Opcional" />
+                  <button type="button" class="icon-btn remove-species" aria-label="Quitar" title="Quitar">🗑️</button>
+                </div>
+              </div>
+
+              <button id="add-product" type="button" class="btn-tertiary" style="margin-top:8px;">
+                + Añadir producto
+              </button>
+            </div>
+          </div>
+
+          <button id="btn-balance" class="btn-primary" style="margin-top:12px;">
+            Ajustar reacción y calcular masas molares
+          </button>
+
+          <p id="balance-error" class="error-msg"></p>
+
+          <div id="balanced-info" class="balanced-info hidden">
+            <div class="balanced-equation">
+              <span class="section-label">Ecuación ajustada:</span>
+              <span id="balanced-equation-text"></span>
+            </div>
+
+            <div class="molar-masses" style="margin-top:8px;">
+              <span class="section-label">Masas molares:</span>
+              <ul id="molar-mass-list"></ul>
+            </div>
+          </div>
+
+          <button id="reset-reaction" class="btn-reset">Reiniciar</button>
+        </section>
+
+        <!-- SECCIÓN 2: MASA / MOLES -->
+        <section class="card">
+          <div class="card-header">
+            <h2 class="card-title">2 · Cálculo</h2>
+          </div>
+
+          <p class="hint">
+            Elige la sustancia conocida y el tipo de dato (masa o moles).
+            Luego selecciona la sustancia a calcular y si quieres el resultado en masa o en moles.
+          </p>
+
+          <div class="field">
+            <span class="field-label">Sustancia conocida</span>
+            <select id="known-species">
+              <option value="">— Selecciona —</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <span class="field-label">Dato conocido</span>
+            <select id="known-type">
+              <option value="mass">Masa (g)</option>
+              <option value="moles">Moles (mol)</option>
+            </select>
+          </div>
+
+          <!-- Bloque masa conocida -->
+          <div id="known-mass-block" class="field">
+            <span class="field-label">Masa conocida (g)</span>
+            <input id="known-mass" type="text" inputmode="decimal" placeholder="Ej: 5 ó 5,5" />
+          </div>
+
+          <!-- Bloque moles conocidos -->
+          <div id="known-moles-block" class="field hidden">
+            <span class="field-label">Moles conocidos (mol)</span>
+            <input id="known-moles" type="text" inputmode="decimal" placeholder="Ej: 0,25" />
+          </div>
+
+          <div class="field">
+            <span class="field-label">Sustancia a calcular</span>
+            <select id="target-species">
+              <option value="">— Selecciona —</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <span class="field-label">Quiero el resultado en</span>
+            <select id="target-type">
+              <option value="mass">Masa (g)</option>
+              <option value="moles">Moles (mol)</option>
+            </select>
+          </div>
+
+          <button id="btn-calc" class="btn-secondary">
+            Calcular
+          </button>
+
+          <p id="calc-error" class="error-msg"></p>
+
+          <div id="result-box" class="result-box hidden">
+            <p class="result-main">
+              <span class="section-label">Resultado:</span>
+              <span id="result-text"></span>
+            </p>
+          </div>
+
+          <button id="btn-show-conversion" class="btn-tertiary hidden">
+            Mostrar conversión
+          </button>
+
+          <div id="conversion-box" class="result-box hidden">
+            <p class="result-main">
+              <span class="section-label">Conversión completa:</span>
+            </p>
+            <div id="conversion-text" class="result-detail mono"></div>
+          </div>
+
+          <button id="reset-mass" class="btn-reset">Reiniciar</button>
+        </section>
+
+      </main>
+
+      <footer class="footer">
+        <span>Autor: Samuel López Melián</span>
+      </footer>
+
+    </div>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
